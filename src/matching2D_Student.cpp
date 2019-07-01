@@ -13,15 +13,27 @@ void matchDescriptors(std::vector<cv::KeyPoint> &kPtsSource, std::vector<cv::Key
 
     if (matcherType.compare("MAT_BF") == 0)
     {
-        int normType = cv::NORM_HAMMING;
-        if(descriptorName.compare("SIFT") == 0){
+        int normType = descriptorType.compare("DES_BINARY") == 0 ? cv::NORM_HAMMING : cv::NORM_L2;
+        if(descriptorName.compare("SIFT") == 0 && normType == cv::NORM_HAMMING){
+            cout << "The descriptor SIFT is not compatible with hamming distance (DES_BINARY)... falling back to L2 norm." << endl;
             normType = cv::NORM_L2;
         }
+
         matcher = cv::BFMatcher::create(normType, crossCheck);
     }
     else if (matcherType.compare("MAT_FLANN") == 0)
     {
-        // ...
+        // Flann wants float values, so it is necessary to convert the uin8_t ones into float in order to avoid the bug
+        matcher = cv::DescriptorMatcher::create(cv::DescriptorMatcher::FLANNBASED);
+        
+        if(descRef.type()!=CV_32F) {
+            descRef.convertTo(descRef, CV_32F);
+        }
+
+        if(descSource.type()!=CV_32F) {
+            descSource.convertTo(descSource, CV_32F);
+        }
+        cout << "FLANN matching" << endl;
     }
 
     // perform matching task
@@ -33,13 +45,26 @@ void matchDescriptors(std::vector<cv::KeyPoint> &kPtsSource, std::vector<cv::Key
     else if (selectorType.compare("SEL_KNN") == 0)
     { // k nearest neighbors (k=2)
 
-        // ...
+        vector<vector<cv::DMatch>> knn_matches;
+        matcher->knnMatch(descSource, descRef, knn_matches, 2);
+
+        // filter matches using descriptor distance ratio test
+        double minDescDistRatio = 0.8;
+
+        for (int i=0; i<knn_matches.size(); i++){
+
+            if (knn_matches[i][0].distance / knn_matches[i][1].distance < minDescDistRatio)
+            {
+                matches.push_back(knn_matches[i][0]);
+            }
+        }
+        cout << "Number of KeyPoints Removed = " << knn_matches.size() - matches.size() << endl;
     }
 }
 
 // Use one of several types of state-of-art descriptors to uniquely identify keypoints
 void descKeypoints(vector<cv::KeyPoint> &keypoints, cv::Mat &img, cv::Mat &descriptors, string descriptorType)
-{   cout << keypoints[0].class_id << endl;
+{   
     // select appropriate descriptor
     cv::Ptr<cv::DescriptorExtractor> extractor;
     if (descriptorType.compare("BRISK") == 0)

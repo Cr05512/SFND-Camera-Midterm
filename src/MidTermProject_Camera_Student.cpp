@@ -44,15 +44,15 @@ int main(int argc, const char *argv[])
 
     vector<cv::KeyPoint> keypoints; // create empty feature list for current image
     vector<cv::KeyPoint> vehicleKpts;
-    string detectorName = "SIFT";
+    string detectorName = "FAST";
 
     cv::Mat descriptors;
-    string descriptorName = "SIFT"; // BRIEF, ORB, FREAK, AKAZE, SIFT
+    string descriptorName = "ORB"; // BRIEF, ORB, FREAK, AKAZE, SIFT
 
     vector<cv::DMatch> matches;
-    string matcherType = "MAT_BF";        // MAT_BF, MAT_FLANN
+    string matcherType = "MAT_FLANN";        // MAT_BF, MAT_FLANN
     string descriptorType = "DES_BINARY"; // DES_BINARY, DES_HOG
-    string selectorType = "SEL_NN";       // SEL_NN, SEL_KNN
+    string selectorType = "SEL_KNN";       // SEL_NN, SEL_KNN
 
     /* MAIN LOOP OVER ALL IMAGES */
 
@@ -205,6 +205,7 @@ int main(int argc, const char *argv[])
         }
         keypoints.clear();
         vehicleKpts.clear();
+        matches.clear();
     } // eof loop over all images
 
     return 0;
