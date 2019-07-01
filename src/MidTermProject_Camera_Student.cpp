@@ -40,19 +40,22 @@ int main(int argc, const char *argv[])
     vector<DataFrame> dataBuffer; // list of data frames which are held in memory at the same time
     bool bVis = false;            // visualize results
     bool bFocusOnVehicle = true;
-    bool bLimitKpts = true;
+    bool bLimitKpts = false;
 
     vector<cv::KeyPoint> keypoints; // create empty feature list for current image
     vector<cv::KeyPoint> vehicleKpts;
-    string detectorName = "FAST";
+    string detectorName = "ORB";  // SHITOMASI, HARRIS, FAST, BRISK, ORB, AKAZE, SIFT
 
     cv::Mat descriptors;
-    string descriptorName = "ORB"; // BRIEF, ORB, FREAK, AKAZE, SIFT
+    string descriptorName = "ORB"; // BRISK, BRIEF, ORB, FREAK, AKAZE, SIFT
 
     vector<cv::DMatch> matches;
-    string matcherType = "MAT_FLANN";        // MAT_BF, MAT_FLANN
+    string matcherType = "MAT_BF";        // MAT_BF, MAT_FLANN
     string descriptorType = "DES_BINARY"; // DES_BINARY, DES_HOG
     string selectorType = "SEL_KNN";       // SEL_NN, SEL_KNN
+
+    uint totalKpts = 0;
+    uint totalMatches = 0;
 
     /* MAIN LOOP OVER ALL IMAGES */
 
@@ -146,6 +149,8 @@ int main(int argc, const char *argv[])
             cout << " NOTE: Keypoints have been limited!" << endl;
         }
 
+        totalKpts += keypoints.size();
+
         // push keypoints and descriptor for current frame to end of data buffer
         (dataBuffer.end() - 1)->keypoints = keypoints;
         cout << "#2 : DETECT KEYPOINTS done" << endl;
@@ -203,10 +208,14 @@ int main(int argc, const char *argv[])
             }
             bVis = false;
         }
+        totalMatches += matches.size();
         keypoints.clear();
         vehicleKpts.clear();
         matches.clear();
     } // eof loop over all images
+
+    cout << "Total number of keypoints over all frames: " << totalKpts << endl;
+    cout << "Total number of matched keypoints over all frames: " << totalMatches << endl;
 
     return 0;
 }

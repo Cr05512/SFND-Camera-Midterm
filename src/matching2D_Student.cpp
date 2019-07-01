@@ -25,7 +25,7 @@ void matchDescriptors(std::vector<cv::KeyPoint> &kPtsSource, std::vector<cv::Key
     {
         // Flann wants float values, so it is necessary to convert the uin8_t ones into float in order to avoid the bug
         matcher = cv::DescriptorMatcher::create(cv::DescriptorMatcher::FLANNBASED);
-        
+
         if(descRef.type()!=CV_32F) {
             descRef.convertTo(descRef, CV_32F);
         }
@@ -70,11 +70,11 @@ void descKeypoints(vector<cv::KeyPoint> &keypoints, cv::Mat &img, cv::Mat &descr
     if (descriptorType.compare("BRISK") == 0)
     {
 
-        int threshold = 30;        // FAST/AGAST detection threshold score.
-        int octaves = 3;           // detection octaves (use 0 to do single scale)
-        float patternScale = 1.0f; // apply this scale to the pattern used for sampling the neighbourhood of a keypoint.
+        //int threshold = 30;        // FAST/AGAST detection threshold score.
+        //int octaves = 3;           // detection octaves (use 0 to do single scale)
+        //float patternScale = 1.0f; // apply this scale to the pattern used for sampling the neighbourhood of a keypoint.
 
-        extractor = cv::BRISK::create(threshold, octaves, patternScale);
+        extractor = cv::BRISK::create();
     }
     else if (descriptorType.compare("BRIEF") == 0){
 
@@ -219,7 +219,6 @@ void detKeypointsModern(std::vector<cv::KeyPoint> &keypoints, cv::Mat &img, std:
     double t = 0;
     if(detectorName.compare("FAST") == 0){
 
-        //double fastThresh = 50;
         t = (double)cv::getTickCount();
         cv::FAST(img, keypoints, true);
         t = ((double)cv::getTickCount() - t) / cv::getTickFrequency();
@@ -227,9 +226,9 @@ void detKeypointsModern(std::vector<cv::KeyPoint> &keypoints, cv::Mat &img, std:
     
     }
     else if (detectorName.compare("BRISK") == 0){
-        double briskThresh = 60;
+        //double briskThresh = 60;
         t = (double)cv::getTickCount();
-        cv::Ptr<cv::FeatureDetector> briskDetector = cv::BRISK::create(briskThresh);
+        cv::Ptr<cv::FeatureDetector> briskDetector = cv::BRISK::create();
         briskDetector->detect(img,keypoints);
         t = ((double)cv::getTickCount() - t) / cv::getTickFrequency();
         cout << "BRISK detector with n= " << keypoints.size() << " keypoints in " << 1000 * t / 1.0 << " ms" << endl;
@@ -237,9 +236,9 @@ void detKeypointsModern(std::vector<cv::KeyPoint> &keypoints, cv::Mat &img, std:
     }
     else if (detectorName.compare("ORB") == 0){
 
-        uint maxFeatures = 400;
+        //uint maxFeatures = 400;
         t = (double)cv::getTickCount();
-        cv::Ptr<cv::FeatureDetector> orbDetector = cv::ORB::create(maxFeatures);
+        cv::Ptr<cv::FeatureDetector> orbDetector = cv::ORB::create();
         orbDetector->detect(img,keypoints);
         t = ((double)cv::getTickCount() - t) / cv::getTickFrequency();
         cout << "ORB detector with n= " << keypoints.size() << " keypoints in " << 1000 * t / 1.0 << " ms" << endl;
