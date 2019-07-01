@@ -44,10 +44,10 @@ int main(int argc, const char *argv[])
 
     vector<cv::KeyPoint> keypoints; // create empty feature list for current image
     vector<cv::KeyPoint> vehicleKpts;
-    string detectorName = "ORB";  // SHITOMASI, HARRIS, FAST, BRISK, ORB, AKAZE, SIFT
+    string detectorName = "SIFT";  // SHITOMASI, HARRIS, FAST, BRISK, ORB, AKAZE, SIFT
 
     cv::Mat descriptors;
-    string descriptorName = "ORB"; // BRISK, BRIEF, ORB, FREAK, AKAZE, SIFT
+    string descriptorName = "SIFT"; // BRISK, BRIEF, ORB, FREAK, AKAZE, SIFT
 
     vector<cv::DMatch> matches;
     string matcherType = "MAT_BF";        // MAT_BF, MAT_FLANN
@@ -56,6 +56,8 @@ int main(int argc, const char *argv[])
 
     uint totalKpts = 0;
     uint totalMatches = 0;
+    double tDetector = 0, tDescriptor = 0;
+    vector<vector<double>> timeLogger;
 
     /* MAIN LOOP OVER ALL IMAGES */
 
@@ -104,15 +106,15 @@ int main(int argc, const char *argv[])
 
         if (detectorName.compare("SHITOMASI") == 0){
 
-            detKeypointsShiTomasi(keypoints, imgGray, bVis);
+            detKeypointsShiTomasi(keypoints, imgGray, tDetector, bVis);
         }
         else if (detectorName.compare("HARRIS") == 0){
             
-            detKeypointsHarris(keypoints, imgGray, bVis);
+            detKeypointsHarris(keypoints, imgGray, tDetector, bVis);
         }
         else{
 
-            detKeypointsModern(keypoints,img,detectorName,bVis);
+            detKeypointsModern(keypoints,img,detectorName,tDetector,bVis);
         }
         //// EOF STUDENT ASSIGNMENT
 
@@ -161,8 +163,9 @@ int main(int argc, const char *argv[])
         //// TASK MP.4 -> add the following descriptors in file matching2D.cpp and enable string-based selection based on descriptorType
         //// -> BRIEF, ORB, FREAK, AKAZE, SIFT
 
-        descKeypoints((dataBuffer.end() - 1)->keypoints, (dataBuffer.end() - 1)->cameraImg, descriptors, descriptorName);
+        descKeypoints((dataBuffer.end() - 1)->keypoints, (dataBuffer.end() - 1)->cameraImg, descriptors, descriptorName, tDescriptor);
         //// EOF STUDENT ASSIGNMENT
+        timeLogger.push_back({tDetector,tDescriptor});
 
         // push descriptors for current frame to end of data buffer
         (dataBuffer.end() - 1)->descriptors = descriptors;
@@ -216,6 +219,20 @@ int main(int argc, const char *argv[])
 
     cout << "Total number of keypoints over all frames: " << totalKpts << endl;
     cout << "Total number of matched keypoints over all frames: " << totalMatches << endl;
+
+    double meanDetectorTime = 0, meanDescriptorTime = 0;
+    for(int i=0; i<timeLogger.size(); i++){
+        for(int j=0; j<2; j++){
+            cout<<timeLogger[i][j]<< " ";
+        }
+        if(i>0){  // Some detectors have a strange behaviour on the first run
+            meanDetectorTime += timeLogger[i][0];
+            meanDescriptorTime += timeLogger[i][1];
+        }
+        cout << endl;
+    }
+
+    cout << "Average Times: Detector " << detectorName << ": " << meanDetectorTime/(timeLogger.size()-1) << ",  Descriptor " << descriptorName << ": " << meanDescriptorTime/(timeLogger.size()-1) << endl; 
 
     return 0;
 }
