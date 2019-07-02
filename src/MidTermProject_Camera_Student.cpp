@@ -47,7 +47,7 @@ int main(int argc, const char *argv[])
     string detectorName = "SIFT";  // SHITOMASI, HARRIS, FAST, BRISK, ORB, AKAZE, SIFT
 
     cv::Mat descriptors;
-    string descriptorName = "SIFT"; // BRISK, BRIEF, ORB, FREAK, AKAZE, SIFT
+    string descriptorName = "ORB"; // BRISK, BRIEF, ORB, FREAK, AKAZE, SIFT
 
     vector<cv::DMatch> matches;
     string matcherType = "MAT_BF";        // MAT_BF, MAT_FLANN
@@ -225,14 +225,14 @@ int main(int argc, const char *argv[])
         for(int j=0; j<2; j++){
             cout<<timeLogger[i][j]<< " ";
         }
-        if(i>0){  // Some detectors have a strange behaviour on the first run
-            meanDetectorTime += timeLogger[i][0];
-            meanDescriptorTime += timeLogger[i][1];
-        }
+        //if(i>0){  // Some detectors have a strange behaviour on the first run
+        meanDetectorTime += timeLogger[i][0];
+        meanDescriptorTime += timeLogger[i][1];
+        //}
         cout << endl;
     }
 
-    cout << "Average Times: Detector " << detectorName << ": " << meanDetectorTime/(timeLogger.size()-1) << ",  Descriptor " << descriptorName << ": " << meanDescriptorTime/(timeLogger.size()-1) << endl; 
+    cout << "Average Times: Detector " << detectorName << ": " << meanDetectorTime/(timeLogger.size()) << "ms,  Descriptor " << descriptorName << ": " << meanDescriptorTime/(timeLogger.size()) << "ms" << endl; 
 
     return 0;
 }
