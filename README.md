@@ -74,4 +74,5 @@ is not true; a check has been added to fix this.
 The interaction time with the OpenCV windows seems to influence (not always) a little the performances  
 of detectors in terms of execution times.  
 All the simulations have been done on an Intel i7-8750H processor clocked at 2.20GHz (12threads).  
+The work has been done entirely on a local machine and using OpenCV-4.1.0
 
