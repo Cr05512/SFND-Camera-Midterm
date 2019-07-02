@@ -44,10 +44,10 @@ int main(int argc, const char *argv[])
 
     vector<cv::KeyPoint> keypoints; // create empty feature list for current image
     vector<cv::KeyPoint> vehicleKpts;
-    string detectorName = "FAST";  // SHITOMASI, HARRIS, FAST, BRISK, ORB, AKAZE, SIFT
+    string detectorName = "SIFT";  // SHITOMASI, HARRIS, FAST, BRISK, ORB, AKAZE, SIFT
 
     cv::Mat descriptors;
-    string descriptorName = "BRISK"; // BRISK, BRIEF, ORB, FREAK, AKAZE, SIFT
+    string descriptorName = "SIFT"; // BRISK, BRIEF, ORB, FREAK, AKAZE, SIFT
 
     vector<cv::DMatch> matches;
     string matcherType = "MAT_BF";        // MAT_BF, MAT_FLANN
